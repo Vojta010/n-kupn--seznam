@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Můj nákupní seznam</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            padding: 40px 15px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 5px 20px #00000015;
+        }
+
+        h1 {
+            text-align: center;
+            color: #263b50;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        input {
+            flex: 1;
+            min-width: 0;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        button {
+            padding: 10px 14px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        .add-btn {
+            background: #2878d0;
+            color: white;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        li span {
+            flex: 1;
+        }
+
+        li.done span {
+            text-decoration: line-through;
+            color: #888;
+        }
+
+        .delete-btn {
+            background: #ffe5e5;
+            color: #b42323;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .clear-btn {
+            background: #e8edf2;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🛒 Nákupní seznam</h1>
+
+        <div class="input-row">
+            <input id="itemInput" type="text"
+                   placeholder="Co potřebuješ koupit?">
+            <button class="add-btn" onclick="addItem()">
+                Přidat
+            </button>
+        </div>
+
+        <ul id="shoppingList">
+            <li>
+                <input type="checkbox" onchange="toggleDone(this)">
+                <span>🥛 Mléko</span>
+                <button class="delete-btn"
+                        onclick="this.parentElement.remove(); updateCount()">
+                    Smazat
+                </button>
+            </li>
+            <li>
+                <input type="checkbox" onchange="toggleDone(this)">
+                <span>🍞 Chléb</span>
+                <button class="delete-btn"
+                        onclick="this.parentElement.remove(); updateCount()">
+                    Smazat
+                </button>
+            </li>
+            <li>
+                <input type="checkbox" onchange="toggleDone(this)">
+                <span>🍎 Jablka</span>
+                <button class="delete-btn"
+                        onclick="this.parentElement.remove(); updateCount()">
+                    Smazat
+                </button>
+            </li>
+        </ul>
+
+        <div class="footer">
+            <span id="count">Zbývá koupit: 3</span>
+            <button class="clear-btn" onclick="clearList()">
+                Vymazat seznam
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function addItem() {
+            const input = document.getElementById("itemInput");
+            const name = input.value.trim();
+
+            if (name === "") {
+                alert("Nejdříve zadej název položky!");
+                return;
+            }
+
+            const li = document.createElement("li");
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.onchange = function () {
+                toggleDone(checkbox);
+            };
+
+            const span = document.createElement("span");
+            span.textContent = name;
+
+            const button = document.createElement("button");
+            button.textContent = "Smazat";
+            button.className = "delete-btn";
+            button.onclick = function () {
+                li.remove();
+                updateCount();
+            };
+
+            li.append(checkbox, span, button);
+            document.getElementById("shoppingList").appendChild(li);
+
+            input.value = "";
+            input.focus();
+            updateCount();
+        }
+
+        function toggleDone(checkbox) {
+            checkbox.parentElement.classList.toggle(
+                "done",
+                checkbox.checked
+            );
+            updateCount();
+        }
+
+        function updateCount() {
+            const items = document.querySelectorAll("#shoppingList li");
+            const remaining = [...items].filter(
+                item => !item.querySelector("input").checked
+            ).length;
+
+            document.getElementById("count").textContent =
+                "Zbývá koupit: " + remaining;
+        }
+
+        function clearList() {
+            document.getElementById("shoppingList").innerHTML = "";
+            updateCount();
+        }
+
+        document.getElementById("itemInput").addEventListener(
+            "keydown", function (event) {
+                if (event.key === "Enter") addItem();
+            }
+        );
+
+        updateCount();
+    </script>
+</body>
+</html>
